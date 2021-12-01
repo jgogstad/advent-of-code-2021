@@ -3,13 +3,17 @@ package jgogstad.day1
 import cats.effect.{ExitCode, IO, IOApp}
 import cats.syntax.all._
 import fs2.Stream
-import io.odin.{consoleLogger, Logger}
-import jgogstad.utils.FileIo
+import fs2.io.file.{Files, Path}
+import io.odin.{Logger, consoleLogger}
 
 object Tasks extends IOApp {
   val log: Logger[IO] = consoleLogger()
 
-  val input = FileIo.contentsOf[IO]("day1/input.txt").evalMap(i => IO(i.toInt))
+  val input: Stream[IO, Int] = Files[IO]
+    .readAll(Path("src/main/resources/day1/input.txt"))
+    .through(fs2.text.utf8.decode)
+    .through(fs2.text.lines)
+    .evalMap(i => IO(i.toInt))
 
   override def run(args: List[String]): IO[ExitCode] = {
     val countIncreasing = (s: Stream[IO, Int]) =>
