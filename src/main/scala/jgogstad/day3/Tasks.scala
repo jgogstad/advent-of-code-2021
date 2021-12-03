@@ -47,9 +47,7 @@ object Tasks extends IOApp {
           val ones  = remaining.map(_.apply(index)).map(b => if (b) 1 else 0).sum
           val zeros = remaining.length - ones
 
-          val vs = if (op(ones, zeros)) remaining.filter(_.apply(index)) else remaining.filterNot(_.apply(index))
-
-          vs match {
+          remaining.filter(_.apply(index) == op(ones, zeros)) match {
             case Nil                           => None
             case h :: Nil                      => Some(h)
             case l if index + 1 < vectorLength => reduce(index + 1, l, op)
@@ -58,7 +56,7 @@ object Tasks extends IOApp {
         }
 
         val ogr      = reduce(0, inputs, _ >= _)
-        val scrubber = reduce(0, inputs.map(_.not), _ <= _).map(_.not)
+        val scrubber = reduce(0, inputs, _ < _)
 
         (ogr, scrubber).tupled.map { case (ogr, scrubber) => ogr.toLong(false) * scrubber.toLong(false) }
     }
