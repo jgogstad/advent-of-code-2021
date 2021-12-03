@@ -15,7 +15,8 @@ lazy val `advent` = (project in file("."))
       "org.typelevel"          %% "spire"                    % V.math.Spire,
       "org.jgrapht"             % "jgrapht-core"             % V.math.Jgrapht,
       "com.lihaoyi"            %% "fastparse"                % V.parsing.Fastparse,
-      "org.scalanlp"           %% "breeze"                   % V.math.Breeze
+      "org.scalanlp"           %% "breeze"                   % V.math.Breeze,
+      "org.scodec"             %% "scodec-core"              % V.data.Scodec
     ),
     scalacOptions -= "-Xfatal-warnings"
   )

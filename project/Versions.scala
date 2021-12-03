@@ -9,6 +9,10 @@ object Versions {
     val KindProjector   = "0.13.2"
   }
 
+  object data {
+    val Scodec = "1.11.9"
+  }
+
   object fp {
     val Cats       = "2.7.0"
     val CatsEffect = "3.3.0"
