@@ -10,7 +10,7 @@ object Tasks extends IOApp {
   val log: Logger[IO] = consoleLogger()
 
   val input: Stream[IO, Int] = Files[IO]
-    .readAll(Path("src/main/resources/day1/input.txt"))
+    .readAll(Path(getClass.getClassLoader.getResource("day1/input.txt").getPath))
     .through(fs2.text.utf8.decode)
     .through(fs2.text.lines)
     .evalMap(i => IO(i.toInt))
