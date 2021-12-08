@@ -7,7 +7,13 @@ import spire.implicits._
 import scala.util.Try
 
 object utils {
-  object long { def unapply(s: String): Option[Long] = s.toLongOption }
+  object char {
+    def unapply(s: String): Option[Char] = s.toCharArray.toList match {
+      case h :: Nil => Some(h)
+      case Nil      => None
+    }
+  }
+  object long     { def unapply(s: String): Option[Long] = s.toLongOption                       }
   object safeLong { def unapply(s: String): Option[SafeLong] = s.toLongOption.map(_.toSafeLong) }
   object comma {
     def unapply(s: String): Option[(Int, Int)] = s.split(",").toList match {
