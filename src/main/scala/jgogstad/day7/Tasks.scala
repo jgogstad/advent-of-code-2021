@@ -2,15 +2,8 @@ package jgogstad.day7
 
 import cats.effect.{ExitCode, IO, IOApp}
 import cats.syntax.all._
-import fs2.Stream
 import fs2.io.file.{Files, Path}
-import io.odin.{consoleLogger, Logger}
-import jgogstad.utils._
-import spire.math.SafeLong
-import spire.implicits._
-
-import scala.annotation.tailrec
-import scala.collection.immutable.MultiSet
+import io.odin.{Logger, consoleLogger}
 
 object Tasks extends IOApp {
   val log: Logger[IO] = consoleLogger()

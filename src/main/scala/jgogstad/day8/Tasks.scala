@@ -1,18 +1,13 @@
 package jgogstad.day8
 
-import cats.data.{NonEmptyList, NonEmptySet}
+import cats.data.NonEmptySet
 import cats.effect.{ExitCode, IO, IOApp}
 import cats.syntax.all._
 import fs2.Stream
 import fs2.io.file.{Files, Path}
 import io.odin.{Logger, consoleLogger}
-import jgogstad.utils._
-import spire.math.SafeLong
-import spire.implicits._
 
-import scala.annotation.tailrec
-import scala.collection.immutable.SortedSet
-import scala.collection.immutable.MultiSet
+import scala.collection.immutable.{MultiSet, SortedSet}
 
 object Tasks extends IOApp {
   val log: Logger[IO] = consoleLogger()

@@ -1,12 +1,12 @@
 package jgogstad.day2
 
-import jgogstad.utils._
-import spire.implicits._
 import cats.effect.{ExitCode, IO, IOApp}
 import cats.syntax.all._
 import fs2.Stream
 import fs2.io.file.{Files, Path}
-import io.odin.{consoleLogger, Logger}
+import io.odin.{Logger, consoleLogger}
+import jgogstad.utils._
+import spire.implicits._
 import spire.math.{Complex, SafeLong}
 
 object Tasks extends IOApp {
