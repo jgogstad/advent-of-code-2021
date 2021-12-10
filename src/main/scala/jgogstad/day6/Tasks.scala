@@ -3,7 +3,7 @@ package jgogstad.day6
 import cats.effect.{ExitCode, IO, IOApp}
 import fs2.io.file.{Files, Path}
 import io.odin.{Logger, consoleLogger}
-import spire.implicits._
+import spire.implicits.*
 import spire.math.SafeLong
 
 object Tasks extends IOApp {

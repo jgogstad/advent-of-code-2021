@@ -1,15 +1,15 @@
 package jgogstad
 
-import cats.syntax.all._
+import cats.syntax.all.*
 import spire.math.SafeLong
-import spire.implicits._
+import spire.implicits.*
 
 import scala.util.Try
 
 object utils {
   object char {
     def unapply(s: String): Option[Char] = s.toCharArray.toList match {
-      case h :: Nil => Some(h)
+      case h :: _ => Some(h)
       case Nil      => None
     }
   }

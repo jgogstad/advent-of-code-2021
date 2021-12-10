@@ -2,7 +2,7 @@ package jgogstad.day8
 
 import cats.data.NonEmptySet
 import cats.effect.{ExitCode, IO, IOApp}
-import cats.syntax.all._
+import cats.syntax.all.*
 import fs2.Stream
 import fs2.io.file.{Files, Path}
 import io.odin.{Logger, consoleLogger}
@@ -49,8 +49,8 @@ object Tasks extends IOApp {
       .flatTap(i => log.info(show"Task 1: $i"))
 
     def solve(patterns: List[String], digits: List[String]): Either[String, Int] = {
-      val multi  = decodeToMultiple(patterns) _
-      val single = decodeToSingle(patterns) _
+      val multi  = decodeToMultiple(patterns)
+      val single = decodeToSingle(patterns)
       val expectSingle: Set[Char] => Either[String, Char] = _.toList match {
         case h :: Nil  => Right(h)
         case l => Left(show"Expected single element, but got $l")

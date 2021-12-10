@@ -1,7 +1,7 @@
 package jgogstad.day9
 
 import cats.effect.{ExitCode, IO, IOApp}
-import cats.syntax.all._
+import cats.syntax.all.*
 import fs2.io.file.{Files, Path}
 import io.odin.{Logger, consoleLogger}
 
