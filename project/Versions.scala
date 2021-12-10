@@ -32,6 +32,7 @@ object Versions {
   object types {
     val ScalaCollectionContrib = "0.2.2"
     val Squants                = "1.8.3"
+    val Newtype                = "0.4.4"
   }
 
   object parsing {
