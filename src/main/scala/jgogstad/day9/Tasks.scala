@@ -4,6 +4,7 @@ import cats.effect.{ExitCode, IO, IOApp}
 import cats.syntax.all.*
 import fs2.io.file.{Files, Path}
 import io.odin.{Logger, consoleLogger}
+import jgogstad.utils.clamp
 
 import scala.annotation.tailrec
 
@@ -16,9 +17,7 @@ object Tasks extends IOApp {
     .through(fs2.text.lines)
     .map(_.toCharArray.map(_.toString.toInt))
 
-  def clamp(min: Int, max: Int, i: Int): Int = Math.min(Math.max(i, min), max)
-
-  override def run(args: List[String]): IO[ExitCode] = {
+    override def run(args: List[String]): IO[ExitCode] = {
     input.compile.toList.flatMap { list =>
       val mask = List((0, 1), (0, -1), (1, 0), (-1, 0))
       val cols = list.head.length
@@ -26,7 +25,7 @@ object Tasks extends IOApp {
       def applyMask(i: Int, j: Int): List[((Int, Int), Int)] =
         mask
           .map { case (x, y) => (i + x) -> (j + y) }
-          .map { case (x, y) => clamp(0, list.length - 1, x) -> clamp(0, cols - 1, y) }
+          .map { case (x, y) => clamp(0, list.length - 1)(x) -> clamp(0, cols - 1)(y) }
           .filter { case (x, y) => x != i || y != j }
           .map { case (x, y) => (x, y) -> list(x)(y) }
 
