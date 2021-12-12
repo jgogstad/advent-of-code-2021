@@ -1,15 +1,15 @@
 package jgogstad.day11
 
 import fs2.Stream
-import spire.implicits.given
+import spire.implicits._
 import cats.effect.{ExitCode, IO, IOApp}
-import cats.syntax.all.given
+import cats.syntax.all._
 import fs2.io.file.{Files, Path}
 import io.odin.{consoleLogger, Logger}
 import spire.math.SafeLong
 import jgogstad.utils.{clamp, CellularAutomata}
-import breeze.linalg.{given, *}
-import jgogstad.{given, *}
+import breeze.linalg._
+import jgogstad._
 
 import scala.annotation.tailrec
 
@@ -26,7 +26,7 @@ object Tasks extends IOApp {
     .compile
     .lastOrError
 
-  def evolve(matrix: DenseMatrix[Int]): Stream[IO, (Int, DenseMatrix[Int])] =
+  def evolve(matrix: DenseMatrix[Int]): Stream[IO, (Int, DenseMatrix[Int])] = {
     val mask = DenseMatrix.ones[Boolean](3, 3)
     mask.update(1, 1, false)
 
@@ -51,14 +51,15 @@ object Tasks extends IOApp {
     }
 
     Stream.unfoldLoop(matrix) { data =>
-      val copy            = data.copy
-      val plusOne         = copy.map(_ + 1)
-      val toFlash         = plusOne.findAll(_ > 9)
-      val out @ (_, next) = flashIteration(0, plusOne, toFlash.toList)
+      val copy = data.copy
+      val plusOne = copy.map(_ + 1)
+      val toFlash = plusOne.findAll(_ > 9)
+      val out@(_, next) = flashIteration(0, plusOne, toFlash.toList)
       out -> Some(next)
     }
+  }
 
-  override def run(args: List[String]): IO[ExitCode] =
+  override def run(args: List[String]): IO[ExitCode] = {
     input
       .flatMap { l =>
         val task1 = evolve(l).map(_._1).take(100).foldMonoid.compile.lastOrError
@@ -72,5 +73,6 @@ object Tasks extends IOApp {
         (task1, task2).parTupled.flatMap(t2 => log.info(show"Task 1 and 2: $t2"))
       }
       .as(ExitCode.Success)
+  }
 
 }

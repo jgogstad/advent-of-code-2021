@@ -4,12 +4,13 @@ object Versions {
   val V = this
 
   object build {
-    val Scala3Version = "3.1.0"
+    val Scala213Version = "2.13.7"
+    val MonadicFor      = "0.3.1"
+    val KindProjector   = "0.13.2"
   }
 
   object data {
-    val CollectionContrib = "0.2.2"
-    val Scodec = "2.1.0"
+    val Scodec = "1.11.9"
   }
 
   object fp {
@@ -23,17 +24,19 @@ object Versions {
   }
 
   object math {
-    val Spire   = "0.18.0-M2"
+    val Spire   = "0.17.0"
     val Jgrapht = "1.5.1"
-    val Breeze  = "2.0.1-RC1"
+    val Breeze  = "2.0"
   }
 
   object types {
+    val ScalaCollectionContrib = "0.2.2"
     val Squants                = "1.8.3"
+    val Newtype                = "0.4.4"
   }
 
   object parsing {
-    val CatsParse = "0.3.6"
+    val Fastparse = "2.3.3"
   }
 
 }

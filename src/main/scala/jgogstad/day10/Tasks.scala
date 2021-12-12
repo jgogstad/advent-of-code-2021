@@ -1,8 +1,8 @@
 package jgogstad.day10
 
-import spire.implicits.given
+import spire.implicits._
 import cats.effect.{ExitCode, IO, IOApp}
-import cats.syntax.all.given
+import cats.syntax.all._
 import fs2.io.file.{Files, Path}
 import io.odin.{consoleLogger, Logger}
 import spire.math.SafeLong
@@ -37,16 +37,16 @@ object Tasks extends IOApp {
     go(Nil, s.toCharArray.toList)
   }
 
-  def score(list: List[Char]): SafeLong = {
-    def go(list: List[Char], acc: SafeLong): SafeLong =
-      list match {
-        case Nil    => acc
-        case h :: t => go(t, acc * 5 + t2Points(h))
-      }
-    go(list, 0.toSafeLong)
-  }
-
   override def run(args: List[String]): IO[ExitCode] = {
+    def score(list: List[Char]): SafeLong = {
+      def go(list: List[Char], acc: SafeLong): SafeLong =
+        list match {
+          case Nil    => acc
+          case h :: t => go(t, acc * 5 + t2Points(h))
+        }
+      go(list, 0.toSafeLong)
+    }
+
     val task1 = input.map(parse).map(_._2).unNone.map(points).foldMonoid.compile.lastOrError
     val task2 = input
       .map(parse)

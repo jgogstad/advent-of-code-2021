@@ -1,8 +1,8 @@
 package jgogstad.day4
 
-import breeze.linalg.*
+import breeze.linalg._
 import cats.effect.{ExitCode, IO, IOApp}
-import cats.syntax.all.*
+import cats.syntax.all._
 import fs2.Stream
 import fs2.io.file.{Files, Path}
 import io.odin.{Logger, consoleLogger}
@@ -66,8 +66,8 @@ object Tasks extends IOApp {
         sum * number
       }
 
-      task1.map(score.tupled).foreach(a => println(s"Task 1: $a"))
-      task2.map(score.tupled).foreach(a => println(s"Task 2: $a"))
+      task1.map((score _).tupled).foreach(a => println(s"Task 1: $a"))
+      task2.map((score _).tupled).foreach(a => println(s"Task 2: $a"))
 
       ExitCode.Success
     }
@@ -114,7 +114,6 @@ object Tasks extends IOApp {
             }
             val result = n -> vl
             lastWinner(numbers.drop(ns.length), removeBoard, Some(result))
-          case None => None
         }
     }
 }

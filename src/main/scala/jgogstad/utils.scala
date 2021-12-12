@@ -1,9 +1,9 @@
 package jgogstad
 
 import breeze.linalg.DenseMatrix
-import cats.syntax.all.*
+import cats.syntax.all._
 import spire.math.SafeLong
-import spire.implicits.*
+import spire.implicits._
 
 import scala.annotation.tailrec
 import scala.util.Try
@@ -13,8 +13,8 @@ object utils {
 
   object char {
     def unapply(s: String): Option[Char] = s.toCharArray.toList match {
-      case h :: _ => Some(h)
-      case Nil    => None
+      case h :: Nil => Some(h)
+      case Nil      => None
     }
   }
   object long     { def unapply(s: String): Option[Long] = s.toLongOption                       }

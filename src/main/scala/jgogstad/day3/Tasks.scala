@@ -1,11 +1,11 @@
 package jgogstad.day3
 
 import cats.effect.{ExitCode, IO, IOApp}
-import cats.syntax.all.*
+import cats.syntax.all._
 import fs2.Stream
 import fs2.io.file.{Files, Path}
 import io.odin.{Logger, consoleLogger}
-import scodec.bits.*
+import scodec.bits._
 
 import scala.annotation.tailrec
 

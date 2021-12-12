@@ -1,6 +1,6 @@
 import cats.Show
 
-import cats.syntax.all.given
+import cats.syntax.all._
 import breeze.linalg.DenseMatrix
 
 package object jgogstad {

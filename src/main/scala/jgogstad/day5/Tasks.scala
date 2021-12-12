@@ -1,12 +1,11 @@
 package jgogstad.day5
 
 import cats.effect.{ExitCode, IO, IOApp}
-import cats.syntax.all.*
+import cats.syntax.all._
 import fs2.Stream
 import fs2.io.file.{Files, Path}
 import io.odin.{Logger, consoleLogger}
-import jgogstad.utils.*
-import collection.mutable.MultiMap
+import jgogstad.utils._
 
 import scala.annotation.tailrec
 import scala.collection.immutable.MultiSet
@@ -43,9 +42,9 @@ object Tasks extends IOApp {
   override def run(args: List[String]): IO[ExitCode] = {
     val task1 = input.filter { case ((a, b), (c, d)) =>
       a == c || b == d
-    }.flatMap(expand.tupled)
+    }.flatMap((expand _).tupled)
 
-    val task2 = input.flatMap(expand.tupled)
+    val task2 = input.flatMap((expand _).tupled)
 
     (solve(task1), solve(task2)).parTupled.flatMap(t2 => log.info(t2.show)).as(ExitCode.Success)
   }
