@@ -55,8 +55,8 @@ object Tasks extends IOApp {
 
       val graph = MultiDict.from(edges)
 
-      val task1 = mod_dfs(Nil, ("start", Nil, MultiSet.empty[String]) :: Nil, 1, graph)
-      val task2 = mod_dfs(Nil, ("start", Nil, MultiSet.empty[String]) :: Nil, 2, graph)
+      val task1 = mod_dfs(Nil, ("start", Nil, MultiSet.empty[String]) :: Nil, graph)
+      val task2 = mod_dfs(Nil, ("start", Nil, MultiSet.empty[String]) :: Nil, graph)
 
       log.info(show"task2: ${task2.size}")
     }.as(ExitCode.Success)

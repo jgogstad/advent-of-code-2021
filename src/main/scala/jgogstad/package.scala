@@ -10,7 +10,7 @@ package object jgogstad {
   implicit def showIterable[F[_], A: Show](implicit ev: F[A] <:< IterableOnce[A]): Show[F[A]] = fa => ev(fa).map(_.show).iterator.mkString(",")
   implicit def showMatrix[A: Show]: Show[DenseMatrix[A]] = _.map(_.show).toString
 
-//  extension [A](matrix: DenseMatrix[A]) {
+//  implicit class DenseMatrixOps[A](matrix: DenseMatrix[A]) {
 //    def convolveAcc[S](z: S)(f: (S, DenseMatrix[A], (Int, Int)) => (S, A)): (S, DenseMatrix[A]) = {
 //      val kernel = DenseMatrix
 //      val shiftLeft = kernel.cols / 2
@@ -24,7 +24,10 @@ package object jgogstad {
 //          .map { case (r, c) => clamp(0, matrix.rows - 1)(i + r) -> clamp(0, matrix.cols - 1)(c + j) }
 //          .distinct
 //          .toList
-//        DenseMatrix.
+//
+//        val rows = realMask.groupBy(_._1).sortBy()
+//
+//
 //      }
 //
 //      @tailrec

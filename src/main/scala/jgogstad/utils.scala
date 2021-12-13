@@ -18,6 +18,7 @@ object utils {
     }
   }
   object long     { def unapply(s: String): Option[Long] = s.toLongOption                       }
+  object int     { def unapply(s: String): Option[Int] = s.toIntOption                       }
   object safeLong { def unapply(s: String): Option[SafeLong] = s.toLongOption.map(_.toSafeLong) }
   object comma {
     def unapply(s: String): Option[(Int, Int)] = s.split(",").toList match {
