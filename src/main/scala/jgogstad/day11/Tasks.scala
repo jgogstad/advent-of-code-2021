@@ -1,15 +1,13 @@
 package jgogstad.day11
 
-import fs2.Stream
-import spire.implicits._
+import breeze.linalg._
 import cats.effect.{ExitCode, IO, IOApp}
 import cats.syntax.all._
+import fs2.Stream
 import fs2.io.file.{Files, Path}
-import io.odin.{consoleLogger, Logger}
-import spire.math.SafeLong
-import jgogstad.utils.{clamp, CellularAutomata}
-import breeze.linalg._
+import io.odin.{Logger, consoleLogger}
 import jgogstad._
+import spire.implicits._
 
 import scala.annotation.tailrec
 
@@ -27,34 +25,23 @@ object Tasks extends IOApp {
     .lastOrError
 
   def evolve(matrix: DenseMatrix[Int]): Stream[IO, (Int, DenseMatrix[Int])] = {
-    val mask = DenseMatrix.ones[Boolean](3, 3)
-    mask.update(1, 1, false)
-
     // run one full iteration of flashes
     @tailrec
-    def flashIteration(acc: Int, data: DenseMatrix[Int], toFlash: List[(Int, Int)]): (Int, DenseMatrix[Int]) = {
-      toFlash.foreach { case (i, j) => data.update(i, j, 0) }
+    def flashIteration(acc: Int, data: DenseMatrix[Int]): (Int, DenseMatrix[Int]) = {
+      val flashed = data.findAll(_ > 9)
 
-      val (moreFlashes, next) = CellularAutomata.stepAccumulate(data, toFlash, mask)(List.empty[(Int, Int)]) {
-        case (flashes, (i, j), el) =>
-          if (el >= 9) (((i -> j) :: flashes).distinct) -> (el + 1)
-          else if (el == 0) flashes -> 0
-          else (flashes, (el + 1))
+      val next = data.convolve(3,3) { case (ij, el, neighbours) =>
+        val flashes = neighbours.activeIterator.filter(_._1 != ij).filter(_._2 > 9)
+        if (el > 9 || el == 0) 0 else el + flashes.size
       }
 
-      moreFlashes match {
-        case Nil => (acc + toFlash.size) -> next
-        case l => {
-          flashIteration(acc + toFlash.size, next, moreFlashes)
-        }
-      }
+      if (next.findAll(_ > 9).nonEmpty) flashIteration(acc + flashed.size, next) else (acc + flashed.size) -> next
     }
 
     Stream.unfoldLoop(matrix) { data =>
       val copy = data.copy
       val plusOne = copy.map(_ + 1)
-      val toFlash = plusOne.findAll(_ > 9)
-      val out@(_, next) = flashIteration(0, plusOne, toFlash.toList)
+      val out@(_, next) = flashIteration(0, plusOne)
       out -> Some(next)
     }
   }

@@ -21,6 +21,7 @@ object Versions {
 
   object logging {
     val Odin = "0.13.0"
+    val Slf4J = "1.7.32"
   }
 
   object math {

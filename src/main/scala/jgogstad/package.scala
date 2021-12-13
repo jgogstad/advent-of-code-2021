@@ -1,8 +1,8 @@
 import cats.Show
-
 import cats.syntax.all._
 import breeze.linalg.DenseMatrix
 import jgogstad.utils.clamp
+import org.slf4j.LoggerFactory
 
 import scala.annotation.tailrec
 
@@ -10,45 +10,26 @@ package object jgogstad {
   implicit def showIterable[F[_], A: Show](implicit ev: F[A] <:< IterableOnce[A]): Show[F[A]] = fa => ev(fa).map(_.show).iterator.mkString(",")
   implicit def showMatrix[A: Show]: Show[DenseMatrix[A]] = _.map(_.show).toString
 
-//  implicit class DenseMatrixOps[A](matrix: DenseMatrix[A]) {
-//    def convolveAcc[S](z: S)(f: (S, DenseMatrix[A], (Int, Int)) => (S, A)): (S, DenseMatrix[A]) = {
-//      val kernel = DenseMatrix
-//      val shiftLeft = kernel.cols / 2
-//      val shiftUp = kernel.rows / 2
-//
-//      val centeredMask: List[(Int ,Int)] = kernel.activeIterator.toList
-//        .map { case (i, j) => (i - shiftUp, j - shiftLeft) }
-//
-//      matrix.mapPairs { case ((i, j), a) =>
-//        val realMask = centeredMask
-//          .map { case (r, c) => clamp(0, matrix.rows - 1)(i + r) -> clamp(0, matrix.cols - 1)(c + j) }
-//          .distinct
-//          .toList
-//
-//        val rows = realMask.groupBy(_._1).sortBy()
-//
-//
-//      }
-//
-//      @tailrec
-//      def go(stack: List[(Int, Int)], s: S, acc: DenseMatrix[A]): (S, DenseMatrix[A]) =
-//        stack match {
-//          case Nil => s -> acc
-//          case (i, j) :: t =>
-//            val realMask = centeredMask
-//              .map { case (r, c) => clamp(0, matrix.rows - 1)(i + r) -> clamp(0, matrix.cols - 1)(c + j) }
-//              .distinct
-//              .toList
-//            val s1 = realMask.foldLeft(s) { case (s, (i, j)) =>
-//              val (s1, a) = f(s, i -> j, acc(i, j))
-//              acc.update(i, j, a)
-//              s1
-//            }
-//            go(t, s1, acc)
-//        }
-//
-//      go(indexes, z, matrix.copy)
-//
-//    }
-//  }
+  val log = LoggerFactory.getLogger("jgogstad")
+
+  implicit class DenseMatrixOps[A](matrix: DenseMatrix[A]) {
+    def convolve[S](maskRows: Int, maskCols: Int)(f: ((Int, Int), A, DenseMatrix[A]) => A): DenseMatrix[A] =
+      convolveAcc(maskRows, maskCols, ())((_, c, a, m) => () -> f(c, a, m))._2
+
+    def convolveAcc[S](maskRows: Int, maskCols: Int, z: S)(f: (S, (Int, Int), A, DenseMatrix[A]) => (S, A)): (S, DenseMatrix[A]) = {
+      val matrixCopy = matrix.copy
+
+      val s = matrix.activeKeysIterator.foldLeft(z) { case (acc, ij@(i, j)) =>
+        val shiftRows = Math.max(0, i - maskRows / 2)
+        val shiftCols = Math.max(0, j - maskCols / 2)
+
+        val window = matrix(shiftRows to Math.min(matrix.rows - 1, i + maskRows / 2), shiftCols to Math.min(matrix.cols - 1, j + maskCols / 2))
+        val mn = (i - shiftRows, j - shiftCols)
+        val (s, a) = f(acc, mn, matrix(ij), window)
+        matrixCopy.update(ij, a)
+        s
+      }
+      s -> matrixCopy
+    }
+  }
 }
