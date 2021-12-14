@@ -2,18 +2,10 @@ package jgogstad.day12
 
 import cats.effect.{ExitCode, IO, IOApp}
 import cats.syntax.all._
-import fs2.Stream
 import fs2.io.file.{Files, Path}
-import io.odin.{consoleLogger, Logger}
-import jgogstad.utils.{clamp, CellularAutomata}
-import jgogstad._
-import org.jgrapht.graph.{DefaultUndirectedWeightedGraph, DefaultWeightedEdge, SimpleDirectedGraph, SimpleGraph}
-import spire.implicits._
-import spire.math.SafeLong
+import io.odin.{Logger, consoleLogger}
 
-import scala.annotation.tailrec
-import scala.collection.immutable.MultiSet
-import scala.collection.immutable.MultiDict
+import scala.collection.immutable.{MultiDict, MultiSet}
 
 object Tasks extends IOApp {
   val log: Logger[IO] = consoleLogger()

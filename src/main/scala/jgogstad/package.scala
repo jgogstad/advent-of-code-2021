@@ -3,12 +3,14 @@ import cats.syntax.all._
 import breeze.linalg.DenseMatrix
 import jgogstad.utils.clamp
 import org.slf4j.LoggerFactory
+import spire.math.SafeLong
 
 import scala.annotation.tailrec
 
 package object jgogstad {
   implicit def showIterable[F[_], A: Show](implicit ev: F[A] <:< IterableOnce[A]): Show[F[A]] = fa => ev(fa).map(_.show).iterator.mkString(",")
   implicit def showMatrix[A: Show]: Show[DenseMatrix[A]] = _.map(_.show).toString
+  implicit def showSafeLong: Show[SafeLong] = Show.fromToString[SafeLong]
 
   val log = LoggerFactory.getLogger("jgogstad")
 
