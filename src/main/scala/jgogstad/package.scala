@@ -1,6 +1,7 @@
 import cats.Show
 import cats.syntax.all._
 import breeze.linalg.DenseMatrix
+import breeze.storage.Zero
 import jgogstad.utils.clamp
 import org.slf4j.LoggerFactory
 import spire.math.SafeLong
@@ -18,6 +19,14 @@ package object jgogstad {
     def convolve[S](maskRows: Int, maskCols: Int)(f: ((Int, Int), A, DenseMatrix[A]) => A): DenseMatrix[A] =
       convolveAcc(maskRows, maskCols, ())((_, c, a, m) => () -> f(c, a, m))._2
 
+    def convolveMap[S, B: Zero](mask: DenseMatrix[B])(f: ((Int, Int), A, List[((Int, Int), A)]) => A): DenseMatrix[A] =
+      convolveAcc(mask, ())((_, c, a, m) => () -> f(c, a, m))._2
+
+    def convolveTap[S, B: Zero](mask: DenseMatrix[B])(f: ((Int, Int), A, List[((Int, Int), A)]) => A): DenseMatrix[A] = {
+      convolveAcc(mask, ())((_, c, a, m) => () -> f(c, a, m))._2
+      matrix
+    }
+
     def convolveAcc[S](maskRows: Int, maskCols: Int, z: S)(f: (S, (Int, Int), A, DenseMatrix[A]) => (S, A)): (S, DenseMatrix[A]) = {
       val matrixCopy = matrix.copy
 
@@ -33,5 +42,40 @@ package object jgogstad {
       }
       s -> matrixCopy
     }
+
+    def convolveAcc[S, B: Zero](mask: DenseMatrix[B], z: S)(f: (S, (Int, Int), A, List[((Int, Int), A)]) => (S, A)): (S, DenseMatrix[A]) = {
+      val matrixCopy = matrix.copy
+      val zero = implicitly[Zero[B]].zero
+
+      val s = matrix.activeKeysIterator.foldLeft(z) { case (acc, ij@(i, j)) =>
+        val clampRows = Math.max(0, i - mask.rows / 2)
+        val clampCols = Math.max(0, j - mask.cols / 2)
+
+        val window: DenseMatrix[A] = matrix(clampRows to Math.min(matrix.rows - 1, i + mask.rows / 2), clampCols to Math.min(matrix.cols - 1, j + mask.cols / 2))
+
+          val maskUp = Math.abs(Math.min(0, i - mask.rows / 2))
+          val maskDown = Math.abs(Math.max(0, i + mask.rows / 2 - (matrix.rows - 1)))
+          val maskLeft = Math.abs(Math.min(0, j - mask.cols / 2))
+          val maskRight = Math.abs(Math.max(0, j + mask.cols / 2 - (matrix.cols - 1)))
+
+          val shiftedMask = mask(maskUp until (mask.rows - maskDown), maskLeft until (mask.cols - maskRight))
+
+        val list = window.activeIterator.zip(shiftedMask.activeIterator).toList
+        val realCoordinates = list.mapFilter {
+          case (c, (_, include)) => (include != zero).guard[Option].as(c).map {
+            case ((p, q), a) => {
+              val vv = ((p - mask.rows / 2 + maskUp + i), (q - mask.cols / 2 + maskLeft + j)) -> a
+              vv
+            }
+          }
+        }
+
+        val (s, a) = f(acc, ij, matrix(ij), realCoordinates)
+        matrixCopy.update(ij, a)
+        s
+      }
+      s -> matrixCopy
+    }
+
   }
 }
