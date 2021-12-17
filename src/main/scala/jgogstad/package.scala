@@ -9,6 +9,7 @@ import spire.math.SafeLong
 import scala.annotation.tailrec
 
 package object jgogstad {
+  implicit def showTuple[A: Show, B: Show](t2: Tuple2[A, B]): Show[Tuple2[A, B]] = { case (a, b) => show"($a -> $b)" }
   implicit def showIterable[F[_], A: Show](implicit ev: F[A] <:< IterableOnce[A]): Show[F[A]] = fa => ev(fa).map(_.show).iterator.mkString(",")
   implicit def showMatrix[A: Show]: Show[DenseMatrix[A]] = _.map(_.show).toString
   implicit def showSafeLong: Show[SafeLong] = Show.fromToString[SafeLong]
