@@ -4,7 +4,7 @@ import cats.effect.{ExitCode, IO, IOApp}
 import cats.syntax.all._
 import fs2.Stream
 import fs2.io.file.{Files, Path}
-import io.odin.{Logger, consoleLogger}
+import io.odin.{consoleLogger, Logger}
 import scodec.bits._
 
 import scala.annotation.tailrec
@@ -23,7 +23,7 @@ object Tasks extends IOApp {
     (task1, task2).parTupled.flatMap { case (t1, t2) => log.info(s"$t1 $t2") }.as(ExitCode.Success)
 
   val task1: IO[Long] = {
-    val count        = input.compile.count
+    val count = input.compile.count
     val countBits = input
       .map(_.split("").map(_.toInt).toList)
       .reduce { (a, b) => a.zip(b).map { case (a, b) => a + b } }
@@ -38,27 +38,27 @@ object Tasks extends IOApp {
     }
   }
 
-  val task2 =  {
+  val task2 = {
     val vectorLength = input.take(1).compile.lastOrError.map(_.length)
 
     (vectorLength, inputVectors.compile.toList).tupled.map { case (vectorLength, inputs) =>
-        @tailrec
-        def reduce(index: Int, remaining: List[BitVector], op: (Int, Int) => Boolean): Option[BitVector] = {
-          val ones  = remaining.map(_.apply(index)).map(b => if (b) 1 else 0).sum
-          val zeros = remaining.length - ones
+      @tailrec
+      def reduce(index: Int, remaining: List[BitVector], op: (Int, Int) => Boolean): Option[BitVector] = {
+        val ones  = remaining.map(_.apply(index)).map(b => if (b) 1 else 0).sum
+        val zeros = remaining.length - ones
 
-          remaining.filter(_.apply(index) == op(ones, zeros)) match {
-            case Nil                           => None
-            case h :: Nil                      => Some(h)
-            case l if index + 1 < vectorLength => reduce(index + 1, l, op)
-            case _                             => None
-          }
+        remaining.filter(_.apply(index) == op(ones, zeros)) match {
+          case Nil                           => None
+          case h :: Nil                      => Some(h)
+          case l if index + 1 < vectorLength => reduce(index + 1, l, op)
+          case _                             => None
         }
+      }
 
-        val ogr      = reduce(0, inputs, _ >= _)
-        val scrubber = reduce(0, inputs, _ < _)
+      val ogr      = reduce(0, inputs, _ >= _)
+      val scrubber = reduce(0, inputs, _ < _)
 
-        (ogr, scrubber).tupled.map { case (ogr, scrubber) => ogr.toLong(false) * scrubber.toLong(false) }
+      (ogr, scrubber).tupled.map { case (ogr, scrubber) => ogr.toLong(false) * scrubber.toLong(false) }
     }
   }
 }

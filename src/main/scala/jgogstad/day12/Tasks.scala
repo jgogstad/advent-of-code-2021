@@ -3,7 +3,7 @@ package jgogstad.day12
 import cats.effect.{ExitCode, IO, IOApp}
 import cats.syntax.all._
 import fs2.io.file.{Files, Path}
-import io.odin.{Logger, consoleLogger}
+import io.odin.{consoleLogger, Logger}
 
 import scala.collection.immutable.{MultiDict, MultiSet}
 
@@ -27,11 +27,13 @@ object Tasks extends IOApp {
         if (h == "end") mod_dfs(("end" :: path).reverse :: acc, t, data)
         else {
           val newVisited = if (h.matches("[a-z]+")) visitedSmall + h else visitedSmall
-          val twice = newVisited.occurrences.toList.filter(_._2 > 1)
+          val twice      = newVisited.occurrences.toList.filter(_._2 > 1)
 
 //          task 1
 //          val expand = data.get(h).filterNot(s => visitedSmall.contains(s))
-          val expand = data.get(h).filter(s => !visitedSmall.contains(s) || twice.isEmpty || twice.exists(t2 => t2._1 == s && t2._2 < 2))
+          val expand = data
+            .get(h)
+            .filter(s => !visitedSmall.contains(s) || twice.isEmpty || twice.exists(t2 => t2._1 == s && t2._2 < 2))
 
           if (expand.isEmpty) mod_dfs(acc, t, data)
           else mod_dfs(acc, expand.toList.map(el => (el, (h :: path), newVisited)) ++ t, data)
@@ -40,17 +42,19 @@ object Tasks extends IOApp {
   }
 
   override def run(args: List[String]): IO[ExitCode] =
-    input.compile.toList.flatMap { (input: List[(String, String)]) =>
-      val edges = input
-        .flatMap { case (a, b) => List(a -> b, b -> a) }
-        .filterNot { case (a, b) => b == "start" || a == "end" }
+    input.compile.toList
+      .flatMap { (input: List[(String, String)]) =>
+        val edges = input
+          .flatMap { case (a, b) => List(a -> b, b -> a) }
+          .filterNot { case (a, b) => b == "start" || a == "end" }
 
-      val graph = MultiDict.from(edges)
+        val graph = MultiDict.from(edges)
 
-      val task1 = mod_dfs(Nil, ("start", Nil, MultiSet.empty[String]) :: Nil, graph)
-      val task2 = mod_dfs(Nil, ("start", Nil, MultiSet.empty[String]) :: Nil, graph)
+        val task1 = mod_dfs(Nil, ("start", Nil, MultiSet.empty[String]) :: Nil, graph)
+        val task2 = mod_dfs(Nil, ("start", Nil, MultiSet.empty[String]) :: Nil, graph)
 
-      log.info(show"task2: ${task2.size}")
-    }.as(ExitCode.Success)
+        log.info(show"task2: ${task2.size}")
+      }
+      .as(ExitCode.Success)
 
 }

@@ -5,7 +5,7 @@ import cats.effect.{ExitCode, IO, IOApp}
 import cats.syntax.all._
 import fs2.Stream
 import fs2.io.file.{Files, Path}
-import io.odin.{Logger, consoleLogger}
+import io.odin.{consoleLogger, Logger}
 
 import scala.collection.immutable.{MultiSet, SortedSet}
 
@@ -17,9 +17,8 @@ object Tasks extends IOApp {
     .through(fs2.text.utf8.decode)
     .through(fs2.text.lines)
     .map(_.split('|').map(_.trim))
-    .flatMap {
-      case Array(patterns, segments) =>
-        Stream.emit(patterns.split(' ').map(_.trim).toList -> segments.split(' ').map(_.trim).toList)
+    .flatMap { case Array(patterns, segments) =>
+      Stream.emit(patterns.split(' ').map(_.trim).toList -> segments.split(' ').map(_.trim).toList)
     }
 
   val segmentsToInt = Map(
@@ -52,18 +51,18 @@ object Tasks extends IOApp {
       val multi  = decodeToMultiple(patterns) _
       val single = decodeToSingle(patterns) _
       val expectSingle: Set[Char] => Either[String, Char] = _.toList match {
-        case h :: Nil  => Right(h)
-        case l => Left(show"Expected single element, but got $l")
+        case h :: Nil => Right(h)
+        case l        => Left(show"Expected single element, but got $l")
       }
 
       val translate = for {
         cf <- multi(2, Set.empty)
-        a  <- single(3, cf)                   // 7
-        bd <- multi(4, cf)                    // 4
-        g  <- single(6, cf ++ bd + a)         // 9
-        e  <- single(7, cf ++ bd + a + g)     // 8
-        b  <- single(6, cf + a + g + e)       // 0
-        f  <- single(5, (bd - b) + a + b + g) // 5
+        a <- single(3, cf)                   // 7
+        bd <- multi(4, cf)                   // 4
+        g <- single(6, cf ++ bd + a)         // 9
+        e <- single(7, cf ++ bd + a + g)     // 8
+        b <- single(6, cf + a + g + e)       // 0
+        f <- single(5, (bd - b) + a + b + g) // 5
       } yield {
         val cm = expectSingle(cf - f)
         val dm = expectSingle(bd - b)

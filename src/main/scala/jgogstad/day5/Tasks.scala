@@ -4,7 +4,7 @@ import cats.effect.{ExitCode, IO, IOApp}
 import cats.syntax.all._
 import fs2.Stream
 import fs2.io.file.{Files, Path}
-import io.odin.{Logger, consoleLogger}
+import io.odin.{consoleLogger, Logger}
 import jgogstad.utils._
 
 import scala.annotation.tailrec
@@ -19,7 +19,7 @@ object Tasks extends IOApp {
     .through(fs2.text.lines)
     .evalMap {
       case s"${comma(x1, y1)} -> ${comma(x2, y2)}" => ((x1, y1), (x2, y2)).pure[IO]
-      case s => IO.raiseError(new Exception(s"Unknown input: ${s}"))
+      case s                                       => IO.raiseError(new Exception(s"Unknown input: ${s}"))
     }
 
   def expand(p1: (Int, Int), p2: (Int, Int)): Stream[IO, (Int, Int)] = {
@@ -40,9 +40,11 @@ object Tasks extends IOApp {
   }
 
   override def run(args: List[String]): IO[ExitCode] = {
-    val task1 = input.filter { case ((a, b), (c, d)) =>
-      a == c || b == d
-    }.flatMap((expand _).tupled)
+    val task1 = input
+      .filter { case ((a, b), (c, d)) =>
+        a == c || b == d
+      }
+      .flatMap((expand _).tupled)
 
     val task2 = input.flatMap((expand _).tupled)
 

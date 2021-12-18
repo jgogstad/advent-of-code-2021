@@ -5,7 +5,7 @@ import cats.effect.{ExitCode, IO, IOApp}
 import cats.syntax.all._
 import fs2.Stream
 import fs2.io.file.{Files, Path}
-import io.odin.{Logger, consoleLogger}
+import io.odin.{consoleLogger, Logger}
 import jgogstad._
 import spire.implicits._
 
@@ -30,7 +30,7 @@ object Tasks extends IOApp {
     def flashIteration(acc: Int, data: DenseMatrix[Int]): (Int, DenseMatrix[Int]) = {
       val flashed = data.findAll(_ > 9)
 
-      val next = data.convolve(3,3) { case (ij, el, neighbours) =>
+      val next = data.convolve(3, 3) { case (ij, el, neighbours) =>
         val flashes = neighbours.activeIterator.filter(_._1 != ij).filter(_._2 > 9)
         if (el > 9 || el == 0) 0 else el + flashes.size
       }
@@ -39,9 +39,9 @@ object Tasks extends IOApp {
     }
 
     Stream.unfoldLoop(matrix) { data =>
-      val copy = data.copy
-      val plusOne = copy.map(_ + 1)
-      val out@(_, next) = flashIteration(0, plusOne)
+      val copy            = data.copy
+      val plusOne         = copy.map(_ + 1)
+      val out @ (_, next) = flashIteration(0, plusOne)
       out -> Some(next)
     }
   }

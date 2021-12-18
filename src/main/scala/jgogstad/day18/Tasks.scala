@@ -78,7 +78,7 @@ private object Tasks extends App {
   }
 
   val task1 = {
-    val folded = input.tail.foldLeft(input.head) { case (acc, el) => reduce(plus(acc, el))}
+    val folded = input.tail.foldLeft(input.head) { case (acc, el) => reduce(plus(acc, el)) }
     magnitude(folded)
   }
   val task2 = input.combinations(2).map { case a :: b :: Nil => magnitude(reduce(plus(a, b))) }.max

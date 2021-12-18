@@ -3,7 +3,7 @@ package jgogstad.day9
 import cats.effect.{ExitCode, IO, IOApp}
 import cats.syntax.all._
 import fs2.io.file.{Files, Path}
-import io.odin.{Logger, consoleLogger}
+import io.odin.{consoleLogger, Logger}
 import jgogstad.utils.clamp
 
 import scala.annotation.tailrec
@@ -17,7 +17,7 @@ object Tasks extends IOApp {
     .through(fs2.text.lines)
     .map(_.toCharArray.map(_.toString.toInt))
 
-    override def run(args: List[String]): IO[ExitCode] = {
+  override def run(args: List[String]): IO[ExitCode] = {
     input.compile.toList.flatMap { list =>
       val mask = List((0, 1), (0, -1), (1, 0), (-1, 0))
       val cols = list.head.length
@@ -30,13 +30,19 @@ object Tasks extends IOApp {
           .map { case (x, y) => (x, y) -> list(x)(y) }
 
       @tailrec
-      def basin(i: Int, j: Int, stack: List[(Int, Int)], visited: Set[(Int, Int)], basins: List[Array[(Set[(Int, Int)])]]): Set[(Int, Int)] = {
-        val el       = list(i)(j)
-        val ns = applyMask(i, j).filter(_._2 > el).filter { case (t2, _) => !visited.contains(t2)}
+      def basin(
+        i: Int,
+        j: Int,
+        stack: List[(Int, Int)],
+        visited: Set[(Int, Int)],
+        basins: List[Array[(Set[(Int, Int)])]]
+      ): Set[(Int, Int)] = {
+        val el     = list(i)(j)
+        val ns     = applyMask(i, j).filter(_._2 > el).filter { case (t2, _) => !visited.contains(t2) }
         val (l, r) = ns.map { case l @ ((x, y), _) => Option(basins(x)(y)).filter(_.nonEmpty).toRight(l) }.separate
 
         val newVisisted = if (el == 9) visited else visited ++ (r.toSet.flatten) + (i -> j)
-        val newStack = l.map(_._1) ++ stack
+        val newStack    = l.map(_._1) ++ stack
         newStack match {
           case Nil         => newVisisted
           case (x, y) :: t => basin(x, y, t, newVisisted, basins)

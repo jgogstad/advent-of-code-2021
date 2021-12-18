@@ -4,7 +4,7 @@ import cats.effect.{ExitCode, IO, IOApp}
 import cats.syntax.all._
 import fs2.Stream
 import fs2.io.file.{Files, Path}
-import io.odin.{Logger, consoleLogger}
+import io.odin.{consoleLogger, Logger}
 import jgogstad.utils._
 import jgogstad._
 import spire.implicits._
@@ -32,7 +32,7 @@ object Tasks extends IOApp {
         val (template: String, instructions: MapView[String, Char]) =
           input.separate.bimap({ case h :: Nil => h }, _.toMap.view.mapValues { case s"${char(c)}" => c })
 
-        val pairs = template.sliding(2).map(_ -> 1.toSafeLong).toMap
+        val pairs     = template.sliding(2).map(_ -> 1.toSafeLong).toMap
         val frequency = template.toCharArray.groupBy(identity).map { case (c, cs) => c -> cs.length.toSafeLong }.toMap
 
         val stream: Stream[IO, Map[Char, SafeLong]] = Stream

@@ -5,7 +5,7 @@ import cats.effect.{ExitCode, IO, IOApp}
 import cats.syntax.all._
 import fs2.Stream
 import fs2.io.file.{Files, Path}
-import io.odin.{Logger, consoleLogger}
+import io.odin.{consoleLogger, Logger}
 
 import scala.annotation.tailrec
 
@@ -62,7 +62,7 @@ object Tasks extends IOApp {
       val task2: Option[(Int, ValueLocation)] = lastWinner(numbers, observations, None)
 
       def score(number: Int, value: ValueLocation): Int = {
-        val sum   = (value.board._1 *:* value.markings).data.sum
+        val sum = (value.board._1 *:* value.markings).data.sum
         sum * number
       }
 

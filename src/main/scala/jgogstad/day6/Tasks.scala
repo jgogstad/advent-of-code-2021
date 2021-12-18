@@ -2,7 +2,7 @@ package jgogstad.day6
 
 import cats.effect.{ExitCode, IO, IOApp}
 import fs2.io.file.{Files, Path}
-import io.odin.{Logger, consoleLogger}
+import io.odin.{consoleLogger, Logger}
 import spire.implicits._
 import spire.math.SafeLong
 
