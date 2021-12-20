@@ -3,6 +3,7 @@ package jgogstad
 import breeze.linalg.DenseMatrix
 import breeze.math.Semiring
 import breeze.storage.Zero
+import cats.kernel.Group
 import cats.syntax.all._
 import spire.ClassTag
 import spire.math.SafeLong
@@ -69,4 +70,11 @@ object utils {
       m
     }
   }
+
+//  object Groups {
+//    def s4[A: Group](ε: A, α: A, β: B): List[A] = {
+//      val one = List(ε, α, β)
+//      one.com
+//    }
+//  }
 }
