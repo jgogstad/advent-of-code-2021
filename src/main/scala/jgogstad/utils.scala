@@ -71,10 +71,8 @@ object utils {
     }
   }
 
-//  object Groups {
-//    def s4[A: Group](ε: A, α: A, β: B): List[A] = {
-//      val one = List(ε, α, β)
-//      one.com
-//    }
-//  }
+  /**
+   * lhs % rhs to the range [1,rhs]
+   */
+  def mod1(lhs: Int, rhs: Int): Int = (lhs - 1) % rhs + 1
 }

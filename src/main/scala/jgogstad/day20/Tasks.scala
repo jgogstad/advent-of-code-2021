@@ -26,9 +26,7 @@ private object Tasks extends App {
     if (i <= 0) acc
     else {
       val next = acc.pad(1, default).convolveMap(mask, Some(default)) { case (xy, value, neighbours) =>
-        val sorted = neighbours.sorted
-        val index  = BitVector.fromValidBin(sorted.map(_._2).mkString).toInt(false)
-        enhancement(index)
+        enhancement(BitVector.fromValidBin(neighbours.sorted.map(_._2).mkString).toInt(false))
       }
 
       val evenDefault = enhancement(BitVector.fromValidBin(List.fill(9)(0).mkString).toInt(false))

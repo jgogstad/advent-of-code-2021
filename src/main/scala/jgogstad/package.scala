@@ -1,3 +1,4 @@
+import algebra.Monoid
 import cats.Show
 import cats.syntax.all._
 import breeze.linalg.DenseMatrix
@@ -15,7 +16,12 @@ package object jgogstad {
   implicit def showIterable[F[_], A: Show](implicit ev: F[A] <:< IterableOnce[A]): Show[F[A]] = fa =>
     ev(fa).map(_.show).iterator.mkString(",")
   implicit def showMatrix[A: Show]: Show[DenseMatrix[A]] = _.map(_.show).toString
+
+  // spire instances
   implicit def showSafeLong: Show[SafeLong]              = Show.fromToString[SafeLong]
+  implicit def zeroSafeLong: Zero[SafeLong] = Zero(SafeLong(0))
+  implicit def tuple2Zero[A](implicit Z: Zero[A]): Zero[Tuple2[A, A]] = Zero(Z.zero -> Z.zero)
+  implicit def monoidSafeLong: Monoid[SafeLong] = Monoid.instance(SafeLong(0), _ + _)
 
   val log = LoggerFactory.getLogger("jgogstad")
 
