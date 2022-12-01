@@ -2,7 +2,7 @@ import algebra.Monoid
 import cats.Show
 import cats.syntax.all._
 import breeze.linalg.DenseMatrix
-import breeze.math.Field
+import breeze.math.{Field, Semiring}
 import breeze.storage.Zero
 import jgogstad.utils.clamp
 import org.slf4j.LoggerFactory

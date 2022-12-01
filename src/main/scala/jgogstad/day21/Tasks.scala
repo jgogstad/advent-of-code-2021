@@ -3,6 +3,8 @@ package jgogstad.day21
 import cats.data.Ior
 import spire.syntax.IntegralSyntax
 
+import java.math.BigInteger
+import java.text.DecimalFormat
 import scala.annotation.tailrec
 //import cats.syntax.all._
 import cats.implicits._
@@ -82,15 +84,21 @@ object Tasks extends IOApp with IntegralSyntax {
 
   val task2 = {
     val m = DenseMatrix.zeros[(SafeLong, SafeLong)](22, 11)
-    m.update(0, input._1, 1.toSafeLong -> 0.toSafeLong)
-    m.update(0, input._2, 0.toSafeLong -> 1.toSafeLong)
+    m.update(0, test._1, 1.toSafeLong -> 0.toSafeLong)
+    m.update(0, test._2, 0.toSafeLong -> 1.toSafeLong)
     val result = quantumRolls(m, 0)
     val all21  = result(21, ::).t.activeIterator.map { case (_, (p1, _)) => p1 }.toList.combineAll
     val all212 = result(21, ::).t.activeIterator.map { case (_, (_, p2)) => p2 }.toList.combineAll
-    println(all21)
-    println(all212)
+
+    val f = new DecimalFormat("###,###")
+
+    println(f.format(new BigInteger("444356092776315")))
+    println(f.format(all21))
+    println(f.format(all212))
+
+    breeze.linalg.sum(result(*, ""))
 //    println(result)
-    println(m.toString(1000, 1000))
+//    println(m.toString(1000, 1000))
   }
 
   def task1 = game(input).collectFirst {
